@@ -81,7 +81,7 @@ EXPORTDYNAMICBLOCKTOYAML
 
 ## Разработчики
 
-[Я и компания]
+[Я и DeepSeek]
 
 
 ## Лицензия
