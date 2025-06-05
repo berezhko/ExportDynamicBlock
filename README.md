@@ -76,7 +76,7 @@ ExportDynamicBlockToyaml
 - Доступ на запись в папку с чертежом
 
 ## Лицензия
-[MIT License](LICENSE) (укажите соответствующую лицензию)
+[MIT License](LICENSE)
 
 ---
 
