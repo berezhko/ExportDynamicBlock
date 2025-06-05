@@ -1,3 +1,7 @@
+;; 
+;; Windows-1251
+;;
+
 (defun ExportDynamicBlockToyaml (/ filePath)
   ;; Главная функция
   (setq filePath (strcat (getvar "dwgprefix") (vl-filename-base (getvar "DWGNAME")) ".yaml"))
