@@ -13,7 +13,19 @@
 )
 
 (defun c:ExportDynamicBlockToyaml (/ start end)
+  (init-type-scheme)
+  
+  ; Получаем начальное время
+  (setq start (getvar "DATE"))  
+  ;; Главная функция, время выполнения которой нужно измерить
+  (ExportDynamicBlockToyaml)
 
+  (setq end (getvar "DATE"))  ; Получаем конечное время
+  (princ (strcat "\nВремя выполнения: " (rtos (* (- end start) 86400) 2 4) " сек."))
+  (princ)
+)
+
+(defun init-type-scheme ()
   ;; Инициализируем глобальную переменную (если еще не существует)
   (if (not *type-scheme*)
     (setq *type-scheme* nil)
@@ -23,48 +35,44 @@
   (setq userChoice (getkword "\nВыберите тип данных для инициализации [Схема/ЗЗИ/Трасса/Все]: "))
   ;; Инициализируем массив в зависимости от выбора
   (cond
-    ((= userChoice "Схема")
-      (setq *type-scheme*
-        '("КЛЕММА1" "КЛЕММА2" "КЛЕММА1_2КАБ" "КЛЕММА2_2КАБ" "КЛЕММА_ВН1" "КЛЕММА_ВН2" "КАБЕЛЬ3" "Устройство" "REF")
-      )
-	)
-    ((= userChoice "ЗЗИ")
-      (setq *type-scheme*
-        '("КОРОБ" "КОНТАКТ" "БЛОК" "ВЫНОСКА")
-      )
-	)
-    ((= userChoice "Трасса")
-      (setq *type-scheme*
-        '("КОРОБ" "ШКАФ")
-      )
-	)
-    ((= userChoice "Все")
-      (setq *type-scheme*
-        '()
-      )
-	)
-    (t (setq *type-scheme* '() ))
+    ((= userChoice "Схема") (init-list-scheme-blocks))
+    ((= userChoice "ЗЗИ") (init-list-zzi-blocks))
+    ((= userChoice "Трасса") (init-list-trace-blocks))
+    ((= userChoice "Все") (init-list-all-blocks))
+    (t (init-list-all-blocks))
   )
   (princ *type-scheme*)
-
-  (setq start (getvar "DATE"))  ; Получаем начальное время
-  
-  ;; Код, время выполнения которого нужно измерить
-  (ExportDynamicBlockToyaml)
-  
-  (setq end (getvar "DATE"))  ; Получаем конечное время
-  (princ (strcat "\nВремя выполнения: " (rtos (* (- end start) 86400) 2 4) " сек."))
-  (princ)
 )
 
 ;; ================================================
 ;; Глобальные условия программы
 ;; ================================================
-(defun is-my-block (ent)
-  (if *type-scheme*
-    (member (get-realName ent) *type-scheme*)
-	t
+(defun init-list-scheme-blocks ()
+  (setq *type-scheme*
+    '("КЛЕММА1" "КЛЕММА2" "КЛЕММА1_2КАБ" "КЛЕММА2_2КАБ" "КЛЕММА_ВН1" "КЛЕММА_ВН2" "КАБЕЛЬ3" "Устройство" "REF")
   )
+)
+
+(defun init-list-zzi-blocks ()
+  (setq *type-scheme*
+    '("КОРОБ" "КОНТАКТ" "БЛОК" "ВЫНОСКА")
+  )
+)
+
+(defun init-list-trace-blocks ()
+  (setq *type-scheme*
+    '("КОРОБ" "ШКАФ")
+  )
+)
+
+(defun init-list-all-blocks ()
+  (setq *type-scheme*
+    '()
+  )
+)
+
+(defun is-my-block (ent)
+  (if *type-scheme* (member (get-realName ent) *type-scheme*) t)
 )
 
 (defun print-debug (str)
