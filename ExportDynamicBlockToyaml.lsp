@@ -72,10 +72,14 @@
 )
 
 (defun is-my-block (ent)
-  (if *type-scheme* (member (get-realName ent) *type-scheme*) t)
+  (if *type-scheme* (member (get-block-realName ent) *type-scheme*) t)
 )
 
 (defun print-debug (str)
+  (if f (princ str))
+)
+
+(defun print-skip-block (str)
   (if f (princ str))
 )
 
@@ -130,7 +134,7 @@
 )
 
 (defun export-block (ent yamlFile)
-  (print-debug (strcat "\n" (itoa (- (sslength ss) i)) "/" (itoa (sslength ss)) " Обработка динамического блока: " (get-realName ent)))
+  (print-debug (strcat "\n" (itoa (- (sslength ss) i)) "/" (itoa (sslength ss)) " Обработка динамического блока: " (get-block-realName ent)))
   (export-block-commonData ent yamlFile)
   (print-debug " Общая часть [Ок],")
   (export-block-attribs ent yamlFile)
@@ -145,7 +149,7 @@
     (setq ent (ssname ss (setq i (1- i))))
     (if (and (is-dynamic-block ent) (is-my-block ent))
       (export-block ent yamlFile)
-      (princ (strcat "\nПропускаем блок: " (get-name ent) "/" (get-realName ent)))
+      (print-skip-block (strcat "\nПропускаем блок: " (get-block-name ent) "/" (get-block-realName ent)))
     )
   )
 )
@@ -180,14 +184,14 @@
   (vla-get-EffectiveName (vlax-ename->vla-object ent))
 )
 
-(defun get-realName (ent)
-  (if (vl-string-search "*U" (get-name ent))
+(defun get-block-realName (ent)
+  (if (vl-string-search "*U" (get-block-name ent))
     (get-block-effective-name ent)
-    (get-name ent)
+    (get-block-name ent)
   )
 )
 
-(defun get-name (ent)
+(defun get-block-name (ent)
   (cdr (assoc 2 (entget ent)))
 )
 
@@ -229,12 +233,13 @@
   (write-line
     (strcat
       "- Handle: '" (get-block-handle ent) "'\n"
-      "  Block Name: '" (get-name ent) "'\n"
-      "  Real Name: '" (get-realName ent) "'\n"
+      "  Block Name: '" (get-block-name ent) "'\n"
+      "  Real Name: '" (get-block-realName ent) "'\n"
       "  X: '" (get-block-X ent) "'\n"
       "  Y: '" (get-block-Y ent) "'\n"
       "  Z: '" (get-block-Z ent) "'\n"
-      "  Layer: '" (get-block-layer ent) "'"
+      "  Layer: '" (get-block-layer ent) "'\n"
+	  "  Rotation: '" (get-block-rotation ent) "'"
     )
   yamlFile
   )
